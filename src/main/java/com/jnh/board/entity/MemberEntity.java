@@ -1,13 +1,11 @@
 package com.jnh.board.entity;
 
 import com.jnh.board.dto.MemberSaveDTO;
+import com.jnh.board.dto.MemberUpdateDTO;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter @Setter
@@ -41,6 +39,16 @@ public class MemberEntity extends BaseEntity{
         memberEntity.setMemberName(memberSaveDTO.getMemberName());
         memberEntity.setMemberPhone(memberSaveDTO.getMemberPhone());
         memberEntity.setMemberProfileName(memberSaveDTO.getMemberProfileName());
+        return memberEntity;
+    }
+
+    public static MemberEntity toUpdateMember(MemberUpdateDTO memberDetailDTO) {
+        MemberEntity memberEntity = new MemberEntity();
+        memberEntity.setMemberEmail(memberDetailDTO.getMemberEmail());
+        memberEntity.setMemberPassword(memberDetailDTO.getMemberPassword());
+        memberEntity.setMemberName(memberDetailDTO.getMemberName());
+        memberEntity.setMemberPhone(memberDetailDTO.getMemberPhone());
+        memberEntity.setMemberProfileName(memberDetailDTO.getMemberProfileName());
         return memberEntity;
     }
 
