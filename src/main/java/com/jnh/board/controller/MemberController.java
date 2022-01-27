@@ -114,9 +114,9 @@ public class MemberController {
 
     // 회원삭제 (/member/5)
     @DeleteMapping("/{memberId}")
-    public ResponseEntity deleteById(@PathVariable Long memberId) {
+    public String deleteById(@PathVariable Long memberId) {
         ms.deleteById(memberId);
-        return new ResponseEntity(HttpStatus.OK);
+        return "redirect:/member";
     }
 
     // 수정화면 요청
@@ -131,9 +131,9 @@ public class MemberController {
     // 수정처리 (put)
     @PutMapping("/{memberId}")
     // json 으로 데이터가 전달되면 @RequestBody로 받아줘야함.
-    public ResponseEntity update(@ModelAttribute MemberUpdateDTO memberUpdateDTO) throws IllegalStateException, IOException {
+    public String update(@ModelAttribute MemberUpdateDTO memberUpdateDTO) throws IllegalStateException, IOException {
         ms.update(memberUpdateDTO);
-        return new ResponseEntity(HttpStatus.OK);
+        return "redirect:/member/" + memberUpdateDTO.getMemberId();
     }
 
 }

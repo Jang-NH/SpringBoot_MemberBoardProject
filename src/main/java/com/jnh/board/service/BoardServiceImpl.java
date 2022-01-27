@@ -101,7 +101,7 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public Page<BoardPagingDTO> search(String type, String keyword, Pageable pageable) {
+    public Page<BoardPagingDTO> search(String searchType, String keyword, Pageable pageable) {
         int page = pageable.getPageNumber();
         page = (page == 1) ? 0 : (page - 1);
 
@@ -109,7 +109,7 @@ public class BoardServiceImpl implements BoardService{
         br.findAll(PageRequest.of(page, PagingConst.PAGE_LIMIT, Sort.by(Sort.Direction.DESC, "id")));
 
 
-        if (type.equals("boardTitle")){
+        if (searchType.equals("boardTitle")){
             searchEntity = br.findByBoardTitleContainingIgnoreCase(keyword,PageRequest.of(page, PagingConst.PAGE_LIMIT, Sort.by(Sort.Direction.DESC, "id")));
         } else {
             searchEntity = br.findByBoardWriterContainingIgnoreCase(keyword,PageRequest.of(page, PagingConst.PAGE_LIMIT, Sort.by(Sort.Direction.DESC, "id")));

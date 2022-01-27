@@ -3,6 +3,7 @@ package com.jnh.board.controller;
 import com.jnh.board.common.PagingConst;
 import com.jnh.board.dto.*;
 import com.jnh.board.service.BoardService;
+import com.jnh.board.service.CommentService;
 import com.jnh.board.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,7 @@ import static com.jnh.board.common.SessionConst.LOGIN_EMAIL;
 public class BoardController {
     private final MemberService ms;
     private final BoardService bs;
+    private final CommentService cs;
 
     // 글작성 폼
     @GetMapping("/save")
@@ -42,12 +44,12 @@ public class BoardController {
     @PostMapping("/save")
     public String save(@Validated @ModelAttribute("board") BoardSaveDTO boardSaveDTO) throws IllegalStateException, IOException { // ModelAttribute 생략 가능(Timeleaf 사용하면 필수 작성!)
         bs.save(boardSaveDTO);
-        return "redirect:/board/";
+        return "redirect:/board";
     }
 
     // 페이징 처리 (/board?page=5) -> 글이 추가되면 페이지에 해당하는 글이 바뀜(페이지 : 고유 정보 아님)으로 Query String(주소값 뒤에 물음표)을 쓰는 것이 좋다.
     // restful한 주소(주소만으로 뭘하고 싶은지 알 수 있음)로 5번 글(글 : 고유 정보) 확인 (/board/5)
-    @GetMapping("/")
+    @GetMapping
     public String paging(@PageableDefault(page = 1) Pageable pageable, Model model, HttpSession session) { // page defailt(기본) 값 : 1
         String memberEmail = (String) session.getAttribute(LOGIN_EMAIL);
         MemberDetailDTO member = ms.findByMemberEmail(memberEmail);
@@ -65,8 +67,8 @@ public class BoardController {
 
     // 검색
     @GetMapping ("/search")
-    public String search(@RequestParam("searchtype") String type, @RequestParam("keyword") String keyword, Model model, @PageableDefault(page = 1)Pageable pageable) {
-        Page<BoardPagingDTO> boardList = bs.search(type, keyword, pageable);
+    public String search(@PageableDefault(page = 1) Pageable pageable, @RequestParam("searchType") String searchType, @RequestParam("keyword") String keyword, Model model) {
+        Page<BoardPagingDTO> boardList = bs.search(searchType, keyword, pageable);
         model.addAttribute("boardList", boardList);
 
         int startPage = (((int) (Math.ceil((double) pageable.getPageNumber() / PagingConst.BLOCK_LIMIT))) - 1) * PagingConst.BLOCK_LIMIT + 1;
@@ -74,7 +76,7 @@ public class BoardController {
         model.addAttribute("startPage",startPage);
         model.addAttribute("endPage",endPage);
 
-        return "redirect:/board/";
+        return "redirect:/board";
     }
 
     // 상세 조회 (get, /board/{boardId})
@@ -83,6 +85,8 @@ public class BoardController {
         log.info("글보기 메서드 호출. 요청 글번호 : {}", boardId); // 변수 출력 원할 시 {} 반드시 필요!
         BoardDetailDTO board = bs.findById(boardId);
         model.addAttribute("board", board);
+        List<CommentDetailDTO> commentList = cs.findAll(boardId);
+        model.addAttribute("commentList", commentList);
         return "board/findById";
     }
 
@@ -96,15 +100,15 @@ public class BoardController {
 
     // 글 수정 처리 (put)
     @PutMapping("/{boardId}")
-    public ResponseEntity update(@ModelAttribute BoardUpdateDTO boardUpdateDTO) throws IllegalStateException, IOException {
+    public String update(@ModelAttribute BoardUpdateDTO boardUpdateDTO) throws IllegalStateException, IOException {
         bs.update(boardUpdateDTO);
-        return new ResponseEntity(HttpStatus.OK);
+        return "redirect:/board/" + boardUpdateDTO.getBoardId();
     }
 
     // 글 삭제 (delete)
     @DeleteMapping("/{boardId}")
-    public ResponseEntity deleteById(@PathVariable Long boardId) {
+    public String deleteById(@PathVariable Long boardId) {
         bs.deleteById(boardId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return "redirect:/board";
     }
 }

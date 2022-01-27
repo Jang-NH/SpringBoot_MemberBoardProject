@@ -44,12 +44,12 @@
     </tr>
     </tbody>
 </table>
-<a th:if="${session.loginEmail == ${session['loginEmail']}}" th:href="@{|/board/update/${board.boardId}|}">글수정</a>
-<button th:if="${session.loginEmail == ${session['loginEmail']}}" th:onclick="deleteById([[${board.boardId}]])">글삭제</button>
+<a th:if="${session.loginEmail == board.boardWriter}" th:href="@{|/board/update/${board.boardId}|}">글수정</a>
+<button th:if="${session.loginEmail == board.boardWriter}" th:onclick="deleteById([[${board.boardId}]])">글삭제</button>
 <button th:if="${session.loginEmail == 'admin'}" th:onclick="deleteById([[${board.boardId}]])">관리자 글삭제</button>
 
 <div id="comment-write">
-    <input type="text" id="commentWriter" placeholder="작성자"> <br>
+    <input type="text" id="commentWriter" name="memberEmail" th:value="${session.loginEmail}" readonly> <br>
     <input type="text" id="commentContents" placeholder="내용"> <br>
     <button id="comment-write-btn">댓글등록</button>
 </div>
@@ -63,7 +63,7 @@
             <th>내용</th>
             <th>작성시간</th>
         </tr>
-        <tr th:each="comment: ${commentList}">
+        <tr th:each="comment : ${commentList}">
             <td th:text="${comment.commentId}"></td>
             <td th:text="${comment.commentWriter}"></td>
             <td th:text="${comment.commentContents}"></td>

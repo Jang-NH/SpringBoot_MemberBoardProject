@@ -6,8 +6,7 @@
 </head>
 <body>
     <form action="/board/save" method="post" th:object="${board}" enctype="multipart/form-data">
-        작성자 : <p th:text="${session['loginEmail']}"></p> <br>
-        <input type="text" name ="boardWriter" th:value="${session['loginEmail']}" hidden> <br>
+        작성자 : <input type="text" name ="memberEmail" th:value="${session.loginEmail}" readonly> <br>
         제목 : <input type="text" th:field="*{boardTitle}">  <br>
         내용 : <input type="text" th:field="*{boardContents}">  <br>
         <input type="file" id="memberProfile" th:field="*{boardFile}">  <br>
